@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet, Text} from 'react-native';
 import {
   GestureEvent,
   GestureHandlerRootView,
@@ -10,6 +10,7 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
+  withDecay,
   withSpring,
 } from 'react-native-reanimated';
 
@@ -32,8 +33,19 @@ function Events(): JSX.Element {
       x.value = ctx.startX + event.translationX;
       y.value = ctx.startY + event.translationY;
     },
-    onEnd: () => {
+    onEnd: event => {
       pressed.value = false;
+
+      console.log(event.velocityX, event.velocityY);
+
+      x.value = withDecay({
+        velocity: event.velocityX,
+        deceleration: 0.95,
+      });
+      y.value = withDecay({
+        velocity: event.velocityY,
+        deceleration: 0.95,
+      });
     },
   });
 
@@ -49,15 +61,24 @@ function Events(): JSX.Element {
   });
 
   return (
-    <GestureHandlerRootView style={styles.rootView}>
-      <PanGestureHandler onGestureEvent={eventHandler}>
-        <Animated.View style={[styles.ball, uas]} />
-      </PanGestureHandler>
-    </GestureHandlerRootView>
+    <>
+      <Text style={styles.title}>Pan gesture with velocity effect</Text>
+      <GestureHandlerRootView style={styles.rootView}>
+        <PanGestureHandler onGestureEvent={eventHandler}>
+          <Animated.View style={[styles.ball, uas]} />
+        </PanGestureHandler>
+      </GestureHandlerRootView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  title: {
+    color: 'black',
+    fontSize: 15,
+    paddingHorizontal: 10,
+    textAlign: 'center',
+  },
   rootView: {
     flex: 1,
   },

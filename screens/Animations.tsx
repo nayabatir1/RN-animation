@@ -1,5 +1,11 @@
 import React, {useEffect} from 'react';
-import {Dimensions, ScrollView, StyleSheet, Text} from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,6 +14,7 @@ import Animated, {
   Easing,
   withRepeat,
   withSequence,
+  cancelAnimation,
 } from 'react-native-reanimated';
 
 function Index(): JSX.Element {
@@ -43,6 +50,13 @@ function Index(): JSX.Element {
     };
   });
 
+  const stopAnimation = () => {
+    cancelAnimation(spring);
+    cancelAnimation(spring2);
+    cancelAnimation(time);
+    cancelAnimation(rotation);
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       const rand = Math.random() * (Dimensions.get('window').width - 120);
@@ -76,6 +90,10 @@ function Index(): JSX.Element {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={styles.backgroundStyle}>
+      <TouchableOpacity onPress={stopAnimation}>
+        <Text style={styles.link}>Cancel Animation</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>Animation with spring (default)</Text>
       <Animated.View style={[styles.box, springStyles]} />
 
@@ -94,6 +112,13 @@ function Index(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+    textTransform: 'uppercase',
+    textAlign: 'right',
+    paddingHorizontal: 10,
+  },
   box: {
     width: 100,
     height: 100,
